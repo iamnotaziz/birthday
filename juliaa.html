@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For My Strawberry 🍓</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+    color: white;
+    text-align: center;
+    overflow-x: hidden;
+}
+
+.page {
+    display: none;
+    padding: 50px;
+}
+
+.active {
+    display: block;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: white;
+    color: #ff4f81;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.big-img {
+    width: 450px;
+    max-width: 90%;
+    border-radius: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+/* HEARTS */
+.heart {
+    position: fixed;
+    bottom: 0;
+    color: red;
+    animation: floatUp 4s linear infinite;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-800px); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+    <h1>Happy Birthday Julia ❤️</h1>
+    <p>To my strawberry 🍓</p>
+    <button onclick="nextPage(2)">Start</button>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+    <h2>Our Story 💕</h2>
+    <p>
+        From the moment you came into my life, everything changed.<br><br>
+        Even with the distance between us, you became my closest person.<br><br>
+        Every message, every call, every moment with you means everything to me.
+    </p>
+    <button onclick="prevPage()">⬅ Back</button>
+    <button onclick="nextPage(3)">Next ➡</button>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+    <h2>Distance Makes Us Stronger 🌍</h2>
+    <p>
+        Distance is not here to break us…<br><br>
+        It proves how real our love is.<br><br>
+        Every day apart is one step closer to being together.<br><br>
+        And I promise you… we will make it ❤️
+    </p>
+    <button onclick="prevPage()">⬅ Back</button>
+    <button onclick="nextPage(4)">Next ➡</button>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" id="page4">
+    <h2>My Favorite Person 💖</h2>
+    <img src="image.jpg" class="big-img">
+    <p>
+        The girl I’m fighting distance for ❤️<br><br>
+        You are my happiness, my peace, and my love.
+    </p>
+    <button onclick="prevPage()">⬅ Back</button>
+    <button onclick="nextPage(5)">Next ➡</button>
+</div>
+
+<!-- PAGE 5 -->
+<div class="page" id="page5">
+    <h2>Final Message 🎁</h2>
+    <p>
+        Happy Birthday, my strawberry 🍓<br><br>
+        I have something special for you…<br><br>
+        Are you ready? ❤️
+    </p>
+    <button onclick="prevPage()">⬅ Back</button><br>
+    <button onclick="startGift()">Open Your Gift 🎁</button>
+</div>
+
+<!-- GIFT PAGE -->
+<div class="page" id="giftPage">
+    <h1>For You, Julia ❤️</h1>
+    <p id="giftText"></p>
+    <img src="image.jpg" class="big-img">
+    <h2>I love you, my strawberry 🍓</h2>
+</div>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+    <source src="hotel.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let currentPage = 1;
+
+function nextPage(pageNumber) {
+    document.getElementById("page" + currentPage).classList.remove("active");
+    currentPage = pageNumber;
+    document.getElementById("page" + currentPage).classList.add("active");
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        document.getElementById("page" + currentPage).classList.remove("active");
+        currentPage--;
+        document.getElementById("page" + currentPage).classList.add("active");
+    }
+}
+
+function startGift() {
+    document.getElementById("page5").classList.remove("active");
+    document.getElementById("giftPage").classList.add("active");
+
+    let music = document.getElementById("bgMusic");
+
+    // force play properly
+    music.volume = 0.7;
+
+    let playPromise = music.play();
+
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            // if autoplay blocked → show manual button
+            let btn = document.createElement("button");
+            btn.innerHTML = "Play Music 🎵";
+            btn.onclick = () => music.play();
+            document.getElementById("giftPage").appendChild(btn);
+        });
+    }
+
+    let text = "Even with all this distance... you are still the closest person to my heart.\n\nEvery moment with you means everything to me.\n\nAnd one day... we won't need screens anymore ❤️";
+    let i = 0;
+
+    function typeWriter() {
+        if (i < text.length) {
+            document.getElementById("giftText").innerHTML += 
+                text.charAt(i) === "\n" ? "<br>" : text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        }
+    }
+
+    typeWriter();
+    startHearts();
+}
+
+function startHearts() {
+    setInterval(() => {
+        let heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = (20 + Math.random() * 30) + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 4000);
+    }, 200);
+}
+</script>
+
+</body>
+</html>
