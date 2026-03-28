@@ -124,9 +124,8 @@ button {
 </div>
 
 <!-- MUSIC -->
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" loop preload="metadata" crossorigin="anonymous">
     <source src="hotel.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
 </audio>
 
 <script>
@@ -152,9 +151,10 @@ function startGift() {
 
     let music = document.getElementById("bgMusic");
     
-    // 1. Reset the music to the start
-    music.currentTime = 0;
-    music.volume = 0.8;
+    // --- NEW ADDITIONS START HERE ---
+    music.load();            // Force the browser to fetch the file again
+    music.volume = 0.8;      // Set volume before playing
+    // --------------------------------
 
     // 2. Try to play
     let playPromise = music.play();
@@ -164,23 +164,25 @@ function startGift() {
             console.log("Music started successfully!");
         }).catch(error => {
             console.log("Playback failed: " + error);
-            // 3. Fallback: Create a visible button if it fails
-            let musicBtn = document.createElement("button");
-            musicBtn.innerHTML = "Click for Music 🎵";
-            musicBtn.style.position = "relative";
-            musicBtn.style.zIndex = "100";
-            musicBtn.onclick = function() {
-                music.play();
-                musicBtn.remove();
-            };
-            document.getElementById("giftPage").appendChild(musicBtn);
+            
+            // If it already exists, don't add another one
+            if (!document.getElementById("manualPlayBtn")) {
+                let musicBtn = document.createElement("button");
+                musicBtn.id = "manualPlayBtn";
+                musicBtn.innerHTML = "Click for Music 🎵";
+                musicBtn.onclick = function() {
+                    music.play();
+                    musicBtn.remove();
+                };
+                document.getElementById("giftPage").appendChild(musicBtn);
+            }
         });
     }
 
     // Typewriter effect logic
     let text = "Even with all this distance... you are still the closest person to my heart.\n\nEvery moment with you means everything to me.\n\nAnd one day... we won't need screens anymore ❤️";
     let i = 0;
-    document.getElementById("giftText").innerHTML = ""; // Clear it first
+    document.getElementById("giftText").innerHTML = ""; 
 
     function typeWriter() {
         if (i < text.length) {
