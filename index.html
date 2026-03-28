@@ -126,6 +126,7 @@ button {
 <!-- MUSIC -->
 <audio id="bgMusic" loop preload="auto">
     <source src="hotel.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
 </audio>
 
 <script>
@@ -150,24 +151,36 @@ function startGift() {
     document.getElementById("giftPage").classList.add("active");
 
     let music = document.getElementById("bgMusic");
+    
+    // 1. Reset the music to the start
+    music.currentTime = 0;
+    music.volume = 0.8;
 
-    // force play properly
-    music.volume = 0.7;
-
+    // 2. Try to play
     let playPromise = music.play();
 
     if (playPromise !== undefined) {
-        playPromise.catch(() => {
-            // if autoplay blocked → show manual button
-            let btn = document.createElement("button");
-            btn.innerHTML = "Play Music 🎵";
-            btn.onclick = () => music.play();
-            document.getElementById("giftPage").appendChild(btn);
+        playPromise.then(_ => {
+            console.log("Music started successfully!");
+        }).catch(error => {
+            console.log("Playback failed: " + error);
+            // 3. Fallback: Create a visible button if it fails
+            let musicBtn = document.createElement("button");
+            musicBtn.innerHTML = "Click for Music 🎵";
+            musicBtn.style.position = "relative";
+            musicBtn.style.zIndex = "100";
+            musicBtn.onclick = function() {
+                music.play();
+                musicBtn.remove();
+            };
+            document.getElementById("giftPage").appendChild(musicBtn);
         });
     }
 
+    // Typewriter effect logic
     let text = "Even with all this distance... you are still the closest person to my heart.\n\nEvery moment with you means everything to me.\n\nAnd one day... we won't need screens anymore ❤️";
     let i = 0;
+    document.getElementById("giftText").innerHTML = ""; // Clear it first
 
     function typeWriter() {
         if (i < text.length) {
