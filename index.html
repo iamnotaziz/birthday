@@ -119,17 +119,32 @@ button {
 <div class="page" id="giftPage">
     <h1>For You, Julia ❤️</h1>
     <p id="giftText"></p>
-    <img src="image.jpg" class="big-img">
+    <img src="./image.jpg" class="big-img">
     <h2>I love you, my strawberry 🍓</h2>
 </div>
 
 <!-- MUSIC -->
-<audio id="bgMusic" loop preload="metadata" crossorigin="anonymous">
-    <source src="hotel.mp3" type="audio/mpeg">
+<audio id="bgMusic" loop preload="auto">
+    <source src="./hotel.mp3" type="audio/mp3">
 </audio>
-
 <script>
 let currentPage = 1;
+let musicUnlocked = false;
+
+const music = document.getElementById("bgMusic");
+
+// 🔓 Unlock audio on first user interaction
+document.addEventListener("click", () => {
+    if (!musicUnlocked) {
+        music.volume = 0;
+        music.play().then(() => {
+            music.pause();
+            music.currentTime = 0;
+            musicUnlocked = true;
+            console.log("Audio unlocked 🔓");
+        }).catch(err => console.log("Unlock failed:", err));
+    }
+}, { once: true });
 
 function nextPage(pageNumber) {
     document.getElementById("page" + currentPage).classList.remove("active");
@@ -149,40 +164,45 @@ function startGift() {
     document.getElementById("page5").classList.remove("active");
     document.getElementById("giftPage").classList.add("active");
 
-    let music = document.getElementById("bgMusic");
-    
-    // --- NEW ADDITIONS START HERE ---
-    music.load();            // Force the browser to fetch the file again
-    music.volume = 0.8;      // Set volume before playing
-    // --------------------------------
+    console.log("Attempting to play music...");
 
-    // 2. Try to play
-    let playPromise = music.play();
-
-    if (playPromise !== undefined) {
-        playPromise.then(_ => {
-            console.log("Music started successfully!");
-        }).catch(error => {
-            console.log("Playback failed: " + error);
-            
-            // If it already exists, don't add another one
-            if (!document.getElementById("manualPlayBtn")) {
-                let musicBtn = document.createElement("button");
-                musicBtn.id = "manualPlayBtn";
-                musicBtn.innerHTML = "Click for Music 🎵";
-                musicBtn.onclick = function() {
-                    music.play();
-                    musicBtn.remove();
-                };
-                document.getElementById("giftPage").appendChild(musicBtn);
+    // 🎵 Play music safely
+    music.volume = 1;
+    music.play().then(() => {
+        let fade = setInterval(() => {
+            if (music.volume < 0.8) {
+                music.volume += 0.05;
+            } else {
+                clearInterval(fade);
             }
-        });
-    }
+        }, 200);
+    }).catch(() => {
+        console.log("Still blocked, showing button...");
+        showManualButton();
+    });
 
-    // Typewriter effect logic
+    typeWriterEffect();
+    startHearts();
+}
+
+function showManualButton() {
+    if (!document.getElementById("manualPlayBtn")) {
+        let btn = document.createElement("button");
+        btn.id = "manualPlayBtn";
+        btn.innerHTML = "Play Music 🎵";
+        btn.onclick = () => {
+            music.play();
+            btn.remove();
+        };
+        document.getElementById("giftPage").appendChild(btn);
+    }
+}
+
+// ✍️ Typewriter
+function typeWriterEffect() {
     let text = "Even with all this distance... you are still the closest person to my heart.\n\nEvery moment with you means everything to me.\n\nAnd one day... we won't need screens anymore ❤️";
     let i = 0;
-    document.getElementById("giftText").innerHTML = ""; 
+    document.getElementById("giftText").innerHTML = "";
 
     function typeWriter() {
         if (i < text.length) {
@@ -194,9 +214,9 @@ function startGift() {
     }
 
     typeWriter();
-    startHearts();
 }
 
+// ❤️ Hearts
 function startHearts() {
     setInterval(() => {
         let heart = document.createElement("div");
@@ -210,6 +230,5 @@ function startHearts() {
     }, 200);
 }
 </script>
-
 </body>
 </html>
