@@ -167,7 +167,7 @@ function startGift() {
     console.log("Attempting to play music...");
 
     // 🎵 Play music safely
-    music.volume = 1;
+    music.volume = 0;
     music.play().then(() => {
         let fade = setInterval(() => {
             if (music.volume < 0.8) {
